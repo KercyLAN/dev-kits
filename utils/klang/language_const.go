@@ -4,7 +4,9 @@
 
 package klang
 
-import "github.com/axgle/mahonia"
+import (
+	"github.com/axgle/mahonia"
+)
 
 var (
 	enc = mahonia.NewDecoder("gbk")
