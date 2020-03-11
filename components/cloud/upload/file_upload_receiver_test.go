@@ -6,7 +6,7 @@ package upload
 
 import (
 	"github.com/KercyLAN/dev-kits/application"
-	"github.com/KercyLAN/dev-kits/utils/khttp/cloud"
+	"github.com/KercyLAN/dev-kits/components/cloud"
 	"github.com/KercyLAN/dev-kits/utils/knet"
 	"net/http"
 	"testing"

@@ -1,7 +1,7 @@
 // expect：be sure to finish!
 // author：KercyLAN
 // create at：2020-3-5 10:16
-
+// todo：待实现
 package tcp
 
 import (

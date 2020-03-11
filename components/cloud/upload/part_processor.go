@@ -15,10 +15,10 @@ import (
 //
 // 对FileUploadReceiver的拓展，提供了对分块上传的需求解决。
 type partProcessor struct {
-	task 					map[string]map[int][]byte			// 分块上传任务
-	taskTemp				map[string]map[int]string			// 分块上传任务（文件存储）
-	taskPartCounter 		map[string]int						// 任务块计数器，统计一个任务总共有多少个块
-	taskFast				map[string]*FileMeta				// 任务快速上传记录
+	task 					map[string]map[int][]byte // 分块上传任务
+	taskTemp				map[string]map[int]string // 分块上传任务（文件存储）
+	taskPartCounter 		map[string]int             // 任务块计数器，统计一个任务总共有多少个块
+	taskFast				map[string]*FileMeta      // 任务快速上传记录
 }
 
 

@@ -1,7 +1,7 @@
 // expect：be sure to finish!
 // author：KercyLAN
 // create at：2020-2-29 22:51
-
+// todo：待优化，断点续传待实现
 package upload
 
 import (
@@ -42,16 +42,16 @@ type FailedFiles map[string]error
 //	- 多文件上传是否要求必须全部上传成功的控制；
 //	- 对上传的文件大小进行限制；
 type FileUploadReceiver struct {
-	*partProcessor												// 分块上传处理器
-	storageDir					string                        	// 文件存储目录
-	readMaxMemory 				int64							// ReadForm最大的内存数，会预留10MB
-	saveFileBufferSize			int64							// 每次读取文件缓冲区大小
-	allPass						bool							// 是否需要所有文件均上传成功才视为上传成功
-	fastUploadHandler			func(hash string) *FileMeta		// 查询文件是否已上传的处理函数
-	completenessCheckHandler	func(data []byte) string		// 完整性检查处理函数
-	partUploadBufferSize		int64							// 分块上传每个块的缓冲区大小
-	fileMaxSize					int64							// 上传文件最大大小
-	partFileMaxSize				int64							// 分块上传文件最大大小
+	*partProcessor                                       // 分块上传处理器
+	storageDir               string                      // 文件存储目录
+	readMaxMemory            int64                       // ReadForm最大的内存数，会预留10MB
+	saveFileBufferSize       int64                       // 每次读取文件缓冲区大小
+	allPass                  bool                        // 是否需要所有文件均上传成功才视为上传成功
+	fastUploadHandler        func(hash string) *FileMeta // 查询文件是否已上传的处理函数
+	completenessCheckHandler func(data []byte) string    // 完整性检查处理函数
+	partUploadBufferSize     int64                       // 分块上传每个块的缓冲区大小
+	fileMaxSize              int64                       // 上传文件最大大小
+	partFileMaxSize          int64                       // 分块上传文件最大大小
 }
 
 // 设置分块上传的文件最大允许的内存空间占用大小

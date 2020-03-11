@@ -7,14 +7,14 @@
  */
 package application
 
-import "github.com/KercyLAN/dev-kits/utils/khttp/cloud"
+import "github.com/KercyLAN/dev-kits/components/cloud"
 
 // 全局唯一的应用程序实例
 var instance *application
 
 // 应用程序通用描述功能集。
 type application struct {
-	Node 				cloud.Node				// 该应用程序的节点信息
+	Node cloud.Node // 该应用程序的节点信息
 }
 
 // 初始化应用程序

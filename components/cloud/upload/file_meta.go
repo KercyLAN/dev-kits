@@ -9,7 +9,7 @@ package upload
 
 import (
 	"github.com/KercyLAN/dev-kits/application"
-	"github.com/KercyLAN/dev-kits/utils/khttp/cloud"
+	"github.com/KercyLAN/dev-kits/components/cloud"
 	uuid "github.com/satori/go.uuid"
 	"path"
 	"time"
@@ -17,15 +17,15 @@ import (
 
 // HTTP上传的文件的文件元信息。
 type FileMeta struct {
-	id 						string					// 文件ID(uuid)
-	name 					string					// 文件名称
-	storageName 			string					// 在文件系统中的名称
-	size 					int64					// 文件大小
-	ext 					string					// 文件扩展名
-	uploadAt 				time.Time				// 文件上传时间
-	hash					string					// 文件的hash
-	node 					cloud.Node				// 文件所在节点
-	isFastUpload			bool					// 是否为快速上传返回的文件元信息
+	id           string     // 文件ID(uuid)
+	name         string     // 文件名称
+	storageName  string     // 在文件系统中的名称
+	size         int64      // 文件大小
+	ext          string     // 文件扩展名
+	uploadAt     time.Time  // 文件上传时间
+	hash         string     // 文件的hash
+	node         cloud.Node // 文件所在节点
+	isFastUpload bool       // 是否为快速上传返回的文件元信息
 }
 
 // 检查这个文件是否是快速上传的。
