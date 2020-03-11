@@ -417,8 +417,13 @@ func (slf *FileUploadReceiver) Dispose(request *http.Request) ([]*FileMeta, Fail
 //
 // 注意：存储文件需要依赖于节点信息，应该在main包的init函数下调用“application.Initialize()”函数进行应用程序初始化。
 func New(storageDir ...string) (*FileUploadReceiver, error) {
+	storage := "./stroage"
+	if len(storageDir) > 0 {
+		storage = storageDir[0]
+	}
+
 	this := &FileUploadReceiver{
-		storageDir:"./storage",
+		storageDir: storage,
 		readMaxMemory: 1024,
 		saveFileBufferSize: 5 * 1024 * 1024,
 		partUploadBufferSize: 30 * 1024 * 1024,

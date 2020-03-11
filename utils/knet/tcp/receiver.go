@@ -43,16 +43,6 @@ func (slf *Receiver) Accept() error {
 	}
 }
 
-// 构建一个TCP连接接收器实例
-func NewReceiver(address string) *Receiver {
-	this := &Receiver{
-		address: address,
-		encoder: kencoder.GbkTo.UTF8,
-	}
-	this.handler = this.defaultConnHandler
-	return this
-}
-
 func (slf *Receiver) defaultConnHandler (conn net.Conn, err error) {
 	defer conn.Close()
 	log.Println(conn.RemoteAddr().String() + " join, but not have handler accept this connection. you can use func \"Receiver.SetConnHandler()\" set handler.")
@@ -66,4 +56,14 @@ func (slf *Receiver) defaultConnHandler (conn net.Conn, err error) {
 		log.Println(conn.RemoteAddr().String() + " " + slf.encoder(readBuffer[:readLen]))
 		conn.Write([]byte("Welcome use \"KercyLAN TCP Server\""))
 	}
+}
+
+// 构建一个TCP连接接收器实例
+func NewReceiver(address string) *Receiver {
+	this := &Receiver{
+		address: address,
+		encoder: kencoder.GbkTo.UTF8,
+	}
+	this.handler = this.defaultConnHandler
+	return this
 }
