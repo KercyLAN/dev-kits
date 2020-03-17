@@ -5,13 +5,33 @@
 package main
 
 import (
-	"runtime"
+	"bufio"
+	"fmt"
+	"net"
+	"os"
+	"strings"
 )
 
+
 func main()  {
-	b := make([]byte, 7 * 1024 * 1024 * 1024 + 4200)
-	for i:= 0; i< len(b); i++ {
-		b[i] = byte('1')
+	conn, err := net.Dial("tcp", "212.64.53.236:55014")
+	if err != nil {
+		fmt.Println("Error dialing", err.Error())
+		return
 	}
-	runtime.GC()
+
+	defer conn.Close()
+	inputReader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Println("请发送信息(退出请输入Q):")
+		input, _ := inputReader.ReadString('\n')
+		trimmedInput := strings.Trim(input, "\r\n")
+		if trimmedInput == "Q" {
+			return
+		}
+		_, err = conn.Write([]byte("send " + trimmedInput))
+		if err != nil {
+			return
+		}
+	}
 }
