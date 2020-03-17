@@ -6,35 +6,34 @@ import (
 )
 
 func TestCorps_Do(t *testing.T) {
-	corps := New()
-
-	// 同步请求
-	result, err := corps.Do(Post, "http://4.shiyuesoft.com/api/uaa/oauth/login").
-		AddFormParam("username", "cszy006").
-		AddFormParam("password", "12345678").
-		AddFormParam("phoneNumber", "").
-		AddFormParam("code", "").
-		SynchronousExec()
-	if err != nil {
-		panic(err)
-	}
-	t.Log(string(result.data))
-
-
-	// 异步请求
 	var wait sync.WaitGroup
 	wait.Add(1)
-	corps.Do(Post, "http://4.shiyuesoft.com/api/uaa/oauth/login").
-		AddFormParam("username", "cszy006").
-		AddFormParam("password", "12345678").
+	corps := New()
+
+	// 异步请求
+	corps.Do(Post, "xxx").
+		AddFormParam("username", "xxx").
+		AddFormParam("password", "xxx").
 		AddFormParam("phoneNumber", "").
 		AddFormParam("code", "").
 		AsynchronousExec(func(result *Result, err error) {
 			if err != nil {
 				panic(err)
 			}
-			t.Log(string(result.data))
+			t.Log("异步", string(result.data))
 			wait.Done()
 		})
+
+	// 同步请求
+	result, err := corps.Do(Get, "xxx").
+		AddUrlParamBunch(`gradeValue=&courseValue=&yearValue=&termValue=&start=1&size=30&isOnline=&_=1584428773730`).
+		SynchronousExec()
+	if err != nil {
+		panic(err)
+	}
+	t.Log("同步", string(result.data))
+
+
 	wait.Wait()
+
 }

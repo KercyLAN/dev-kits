@@ -83,6 +83,12 @@ func (slf *client) run(idle chan <- *client) *client {
 	return slf
 }
 
+// 设置transport
+func (slf *client) setTransport(transport *http.Transport) *client {
+	slf.Transport = transport
+	return slf
+}
+
 // 构建一个客户端
 func newClient() *client {
 	slf := &client{

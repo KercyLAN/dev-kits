@@ -15,13 +15,13 @@ import (
 	"sync"
 )
 
-// 回调函数
+// 回调函数。
 type reqCallback func(data []byte, response *http.Response, err error)
 
-// 异步回调
+// 异步回调。
 type CallBack func(result *Result, err error)
 
-// 构建完毕待发出的请求描述
+// 构建完毕待发出的请求描述。
 type req struct {
 	request 				*http.Request					// Request
 	master 					*Corps 							// http客户端组件
@@ -31,7 +31,7 @@ type req struct {
 	contentType				string							// 内容类型
 	contentTypeParam		[]string						// Content-Type参数，如charset=UTF-8
 	json 					[]byte 							// json
-	content					string							// text
+	content					string							// 通用内容
 	params 					map[string][]string				// 携带的请求参数
 
 	callBack 				reqCallback						// 回调函数
@@ -40,7 +40,7 @@ type req struct {
 	Err 					error							// 请求是否存在异常
 }
 
-// 决定这个就绪的请求发起同步请求
+// 决定这个就绪的请求发起同步请求。
 func (slf *req) SynchronousExec() (*Result, error) {
 	if slf.Err != nil {
 		return nil, slf.Err
@@ -64,7 +64,7 @@ func (slf *req) SynchronousExec() (*Result, error) {
 }
 
 
-// 决定这个就绪的请求发起异步请求
+// 决定这个就绪的请求发起异步请求。
 func (slf *req) AsynchronousExec(callback CallBack) {
 	if slf.Err != nil {
 		callback(nil, slf.Err)
@@ -75,21 +75,48 @@ func (slf *req) AsynchronousExec(callback CallBack) {
 	(<- slf.master.idle).add(slf)
 }
 
-// 设置请求Cookie
+// 设置自动压缩
+// 如果DisableCompression为真，会禁止Transport在请求中没有Accept-Encoding头时，
+// 主动添加"Accept-Encoding: gzip"头，以获取压缩数据。
+//
+// 如果Transport自己请求gzip并得到了压缩后的回复，它会主动解压缩回复的主体。
+//
+// 但如果用户显式的请求gzip压缩数据，Transport是不会主动解压缩的。
+func (slf *req) DisableCompression(disable bool) *req {
+	slf.master.transport.DisableCompression = disable
+	return slf
+}
+
+// 设置以代理的方式来进行请求
+//
+// 例：return url.Parse("socks5://127.0.0.1:1080")
+func (slf *req) SetProxy(proxyHandler func(*http.Request) (*url.URL, error)) {
+	slf.master.transport.Proxy = proxyHandler
+}
+
+// 设置请求Cookie。
 func (slf *req) SetCookie(cookie *http.Cookie) *req {
 	slf.master.cookies[cookie.Name] = cookie
 	return slf
 }
 
+// 跳过安全证书验证
+//
+// 将会影响整个Corps接下来的所有的请求。
+func (slf *req) SkipSecureVerify(skip bool) *req {
+	slf.master.transport.TLSClientConfig.InsecureSkipVerify = skip
+	return slf
+}
+
 // 设置请求永久Header
 //
-// 这样设置的Header将会在整个Corps实例中均存在
+// 这样设置的Header将会在整个Corps实例中均存在。
 func (slf *req) SetHeaderForever(name, value string) *req {
 	slf.master.headers[name] = value
 	return slf
 }
 
-// 设置请求临时Header
+// 设置请求临时Header。
 func (slf *req) SetHeader(name, value string) *req {
 	if slf.request != nil {
 		if name == "Content-Type" {
@@ -100,19 +127,19 @@ func (slf *req) SetHeader(name, value string) *req {
 	return slf
 }
 
-// 设置请求发送JSON数据
+// 设置请求发送JSON数据。
 func (slf *req) Json(json []byte) {
 	slf.contentType = "application/json"
 	slf.json = json
 }
 
-// 设置请求发送特定类型的文本信息
+// 设置请求发送特定类型的文本信息。
 func (slf *req) Content(content string, contentType string) {
 	slf.contentType = contentType
 	slf.content = content
 }
 
-// 设置请求发送JSON数据
+// 设置请求发送JSON数据。
 func (slf *req) JsonEntity(jsonEntity interface{}) *req {
 	json, err := json.Marshal(jsonEntity)
 	if err != nil {
@@ -124,19 +151,19 @@ func (slf *req) JsonEntity(jsonEntity interface{}) *req {
 	return slf
 }
 
-// 设置请求Content-Type
+// 设置请求Content-Type。
 func (slf *req) SetContentType(contentType string) *req {
 	slf.contentType = contentType
 	return slf
 }
 
-// 添加请求Content-Type参数
+// 添加请求Content-Type参数。
 func (slf *req) AddContentTypeParam(param string) *req {
 	slf.contentTypeParam = append(slf.contentTypeParam, param)
 	return slf
 }
 
-// 格式化请求
+// 格式化请求。
 func (slf *req) format() {
 	if slf.request == nil {
 		return

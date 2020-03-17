@@ -1,6 +1,7 @@
 package http
 
 import (
+	"crypto/tls"
 	"github.com/KercyLAN/dev-kits/components/file"
 	"net/http"
 )
@@ -9,11 +10,12 @@ import (
 //
 // 支持同步和异步请求
 type Corps struct {
-	config 			*conf					// 配置信息
-	fileCorps 		*file.Corps				// 文件处理组件
-	idle 			chan *client			// 空闲的客户端管道
-	headers 		map[string]string		// 永久header
-	cookies 		map[string]*http.Cookie // 永久Cookie
+	config 					*conf					// 配置信息
+	fileCorps 				*file.Corps				// 文件处理组件
+	idle 					chan *client			// 空闲的客户端管道
+	headers 				map[string]string		// 永久header
+	cookies 				map[string]*http.Cookie // 永久Cookie
+	transport 				*http.Transport
 }
 
 // 构建请求
@@ -45,11 +47,13 @@ func New(config ...*conf) *Corps {
 		fileCorps: file.New(fileCorpsConfig),
 		headers: map[string]string{},
 		cookies: map[string]*http.Cookie{},
+		transport: &http.Transport{},
 	}
+	slf.transport.TLSClientConfig = &tls.Config{}
 
 	// 根据配置构建空闲客户端
 	for i := 0; i< useConf.DefaultIdle; i++ {
-		slf.idle <- newClient().run(slf.idle)
+		slf.idle <- newClient().setTransport(slf.transport).run(slf.idle)
 	}
 
 	return slf
