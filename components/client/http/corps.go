@@ -19,7 +19,7 @@ type Corps struct {
 }
 
 // 构建请求
-func (slf *Corps) Do(method method, url string) *req {
+func (slf *Corps) Do(method Method, url string) *Req {
 	return newReq(slf, method, url)
 }
 

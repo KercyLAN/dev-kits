@@ -21,8 +21,12 @@ type reqCallback func(data []byte, response *http.Response, err error)
 // 异步回调。
 type CallBack func(result *Result, err error)
 
-// 构建完毕待发出的请求描述。
-type req struct {
+// 构建完毕待发出的请求结构描述
+//
+// 在Req中可以针对请求需要的内容进行调整。
+//
+// 在设定完毕后使用SynchronousExec或AsynchronousExec函数即可发出异步或同步请求。
+type Req struct {
 	request 				*http.Request					// Request
 	master 					*Corps 							// http客户端组件
 	bodyBuffer				*bytes.Buffer					// 请求体缓冲器
@@ -40,8 +44,8 @@ type req struct {
 	Err 					error							// 请求是否存在异常
 }
 
-// 决定这个就绪的请求发起同步请求。
-func (slf *req) SynchronousExec() (*Result, error) {
+// 发起同步请求。
+func (slf *Req) SynchronousExec() (*Result, error) {
 	if slf.Err != nil {
 		return nil, slf.Err
 	}
@@ -64,8 +68,8 @@ func (slf *req) SynchronousExec() (*Result, error) {
 }
 
 
-// 决定这个就绪的请求发起异步请求。
-func (slf *req) AsynchronousExec(callback CallBack) {
+// 发起异步请求。
+func (slf *Req) AsynchronousExec(callback CallBack) {
 	if slf.Err != nil {
 		callback(nil, slf.Err)
 		return
@@ -82,7 +86,7 @@ func (slf *req) AsynchronousExec(callback CallBack) {
 // 如果Transport自己请求gzip并得到了压缩后的回复，它会主动解压缩回复的主体。
 //
 // 但如果用户显式的请求gzip压缩数据，Transport是不会主动解压缩的。
-func (slf *req) DisableCompression(disable bool) *req {
+func (slf *Req) DisableCompression(disable bool) *Req {
 	slf.master.transport.DisableCompression = disable
 	return slf
 }
@@ -90,20 +94,31 @@ func (slf *req) DisableCompression(disable bool) *req {
 // 设置以代理的方式来进行请求
 //
 // 例：return url.Parse("socks5://127.0.0.1:1080")
-func (slf *req) SetProxy(proxyHandler func(*http.Request) (*url.URL, error)) {
+func (slf *Req) SetProxy(proxyHandler func(*http.Request) (*url.URL, error)) {
 	slf.master.transport.Proxy = proxyHandler
 }
 
 // 设置请求Cookie。
-func (slf *req) SetCookie(cookie *http.Cookie) *req {
+//
+// 通过SetCookie设置的Cookie信息并非是一次性的。
+//
+// 在设置过Cookie后，之后的每一次发起请求都会为Crops附加上这些Cookie信息，
+// 如果需要清空Cookie信息请使用“ResetCookie”函数
+func (slf *Req) SetCookie(cookie *http.Cookie) *Req {
 	slf.master.cookies[cookie.Name] = cookie
+	return slf
+}
+
+// 清空所有附加的Cookie信息
+func (slf *Req) ResetCookie() *Req {
+	slf.master.cookies = map[string]*http.Cookie{}
 	return slf
 }
 
 // 跳过安全证书验证
 //
 // 将会影响整个Corps接下来的所有的请求。
-func (slf *req) SkipSecureVerify(skip bool) *req {
+func (slf *Req) SkipSecureVerify(skip bool) *Req {
 	slf.master.transport.TLSClientConfig.InsecureSkipVerify = skip
 	return slf
 }
@@ -111,13 +126,15 @@ func (slf *req) SkipSecureVerify(skip bool) *req {
 // 设置请求永久Header
 //
 // 这样设置的Header将会在整个Corps实例中均存在。
-func (slf *req) SetHeaderForever(name, value string) *req {
+func (slf *Req) SetHeaderForever(name, value string) *Req {
 	slf.master.headers[name] = value
 	return slf
 }
 
-// 设置请求临时Header。
-func (slf *req) SetHeader(name, value string) *req {
+// 设置请求临时Header
+//
+// 这样设置的Header仅在本次请求中生效。
+func (slf *Req) SetHeader(name, value string) *Req {
 	if slf.request != nil {
 		if name == "Content-Type" {
 			return slf
@@ -128,19 +145,19 @@ func (slf *req) SetHeader(name, value string) *req {
 }
 
 // 设置请求发送JSON数据。
-func (slf *req) Json(json []byte) {
+func (slf *Req) Json(json []byte) {
 	slf.contentType = "application/json"
 	slf.json = json
 }
 
 // 设置请求发送特定类型的文本信息。
-func (slf *req) Content(content string, contentType string) {
+func (slf *Req) Content(content string, contentType string) {
 	slf.contentType = contentType
 	slf.content = content
 }
 
 // 设置请求发送JSON数据。
-func (slf *req) JsonEntity(jsonEntity interface{}) *req {
+func (slf *Req) JsonEntity(jsonEntity interface{}) *Req {
 	json, err := json.Marshal(jsonEntity)
 	if err != nil {
 		slf.Err = err
@@ -152,19 +169,19 @@ func (slf *req) JsonEntity(jsonEntity interface{}) *req {
 }
 
 // 设置请求Content-Type。
-func (slf *req) SetContentType(contentType string) *req {
+func (slf *Req) SetContentType(contentType string) *Req {
 	slf.contentType = contentType
 	return slf
 }
 
 // 添加请求Content-Type参数。
-func (slf *req) AddContentTypeParam(param string) *req {
+func (slf *Req) AddContentTypeParam(param string) *Req {
 	slf.contentTypeParam = append(slf.contentTypeParam, param)
 	return slf
 }
 
 // 格式化请求。
-func (slf *req) format() {
+func (slf *Req) format() {
 	if slf.request == nil {
 		return
 	}
@@ -281,7 +298,7 @@ func setReader(request *http.Request, reader io.Reader)  {
 }
 
 // 请求URL中添加参数
-func (slf *req) AddUrlParam(key, value string) *req {
+func (slf *Req) AddUrlParam(key, value string) *Req {
 	if slf.request != nil {
 		v := slf.request.URL.Query()
 		v.Add(key, value)
@@ -291,7 +308,7 @@ func (slf *req) AddUrlParam(key, value string) *req {
 }
 
 // 请求URL中添加参数串
-func (slf *req) AddUrlParamBunch(bunch string) *req {
+func (slf *Req) AddUrlParamBunch(bunch string) *Req {
 	if slf.request != nil {
 		v := slf.request.URL.Query()
 		for _, slice := range strings.Split(bunch, "&") {
@@ -303,7 +320,7 @@ func (slf *req) AddUrlParamBunch(bunch string) *req {
 }
 
 // 表单中添加参数
-func (slf *req) AddFormParam(key, value string) *req {
+func (slf *Req) AddFormParam(key, value string) *Req {
 	if slf.params[key] == nil {
 		slf.params[key] = make([]string, 0)
 	}
@@ -312,7 +329,7 @@ func (slf *req) AddFormParam(key, value string) *req {
 }
 
 // 表单中添加参数串
-func (slf *req) AddFormParamBunch(bunch string) *req {
+func (slf *Req) AddFormParamBunch(bunch string) *Req {
 	for _, slice := range strings.Split(bunch, "&") {
 		k, v := kstr.KV(slice, "=")
 		if slf.params[k] == nil {
@@ -324,7 +341,7 @@ func (slf *req) AddFormParamBunch(bunch string) *req {
 }
 
 // 表单中写入一个文件
-func (slf *req) CreateFormFile(fieldName string, filePath string) *req {
+func (slf *Req) CreateFormFile(fieldName string, filePath string) *Req {
 	// 打开文件
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
@@ -362,8 +379,8 @@ func (slf *req) CreateFormFile(fieldName string, filePath string) *req {
 }
 
 // 构建一个带发出的请求实例
-func newReq(master *Corps, method method, url string) *req {
-	slf := new(req)
+func newReq(master *Corps, method Method, url string) *Req {
+	slf := new(Req)
 	slf.master = master
 	slf.bodyBuffer = &bytes.Buffer{}
 	slf.bodyWriter = multipart.NewWriter(slf.bodyBuffer)

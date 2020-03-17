@@ -1,8 +1,9 @@
 package http
 
-type method string
+// 请求方法结构描述
+type Method string
 
 const (
-	Get 	method	= "GET"
-	Post 	method	= "POST"
+	Get 	Method	= "GET"
+	Post 	Method	= "POST"
 )
