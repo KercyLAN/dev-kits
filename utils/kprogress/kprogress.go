@@ -2,6 +2,9 @@
 // author：KercyLAN
 // create at：2020-2-29 10:35
 
+/**
+包kprogress提供了对进度相关的封装及描述
+ */
 package kprogress
 
 import (

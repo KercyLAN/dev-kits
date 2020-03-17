@@ -2,6 +2,9 @@
 // author：KercyLAN
 // create at：2020-2-28 20:45
 
+/**
+包kproperties包含了对Properties文件的封装及描述
+ */
 package kproperties
 
 import (
@@ -14,10 +17,11 @@ import (
 	"strings"
 )
 
-// Properties 表示了对properties格式文件的数据结构体
+// 对properties格式文件的数据结构体
 type Properties struct {
 	details 		map[string]string			// 细节
 }
+
 
 func (slf *Properties) HasKey(key string) bool {
 	_, ok := slf.details[key]
@@ -104,10 +108,12 @@ func (slf *Properties) GetFloat64(key string) (float64, error) {
 	return kstr.FormatSpeedyFloat64(slf.details[key])
 }
 
-// New 返回由propertiesFilePath路径的properties文件解析后的properties指针类型
+// 返回由propertiesFilePath路径的properties文件解析后的properties实例
 //
 // 当读取配置文件失败的时候意味着这是一个完全无效且可能会造成后续程序异常的操作，抛出error。
+//
 // 读取的配置文件中如果存在“\r\n”或“\n”，抛出error。
+//
 // 读取的配置文件中如果发生没有key的情况，抛出error。
 func New(propertiesFilePath string) (*Properties, error) {
 	fileData, err := kfile.ReadOnce(propertiesFilePath)

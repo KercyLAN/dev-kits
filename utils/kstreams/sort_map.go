@@ -10,10 +10,32 @@ import (
 	"sort"
 )
 
-// EachMapSort 对传入的eachMap进行排序后再进行遍历
+// 对传入的eachMap进行排序后再进行遍历
 //
-// 确保eachFunc传入的类型为func，并且其拥有两个入参，分别对应eachMap的Key类型和Value类型
-// 在EachMapSort对eachMap排序之后会进行一次遍历，并且将Key和Value分别传入eachFunc这个函数里进行调用
+// 确保eachFunc传入的类型为func，并且其拥有两个入参，分别对应eachMap的Key类型和Value类型。
+//
+// 在EachMapSort对eachMap排序之后会进行一次遍历，并且将Key和Value分别传入eachFunc这个函数里进行调用。
+//
+// 使用示例如下：
+//	mInt := map[int]string {
+//		3: "line 3",
+//		1: "line 1",
+//		2: "line 2",
+//	}
+//	EachMapSort(mInt, func(key int, value string) {
+//		t.Log(key, value)
+//	})
+//	t.Log("------------------------------------")
+//	mString := map[string]string {
+//		"3": "line 3",
+//		"1": "line 1",
+//		"b": "line b",
+//		"2": "line 2",
+//		"a": "line a",
+//	}
+//	EachMapSort(mString, func(key string, value string) {
+//		t.Log(key, value)
+//	})
 func EachMapSort(eachMap interface{}, eachFunc interface{})  {
 	eachMapValue := reflect.ValueOf(eachMap)
 	eachFuncValue := reflect.ValueOf(eachFunc)

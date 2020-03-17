@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// HideSensitivity 返回防敏感化后的字符串
+// 返回防敏感化后的字符串
 //
 // 隐藏身份证、邮箱、手机号等敏感信息用*号替代
 func HideSensitivity(str string) (result string) {

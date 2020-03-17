@@ -2,6 +2,10 @@
 // author：KercyLAN
 // create at：2020-3-5 10:16
 // todo：待实现
+
+/**
+包tcp对快速搭建一个TCP服务器进行的支持
+*/
 package tcp
 
 import (
