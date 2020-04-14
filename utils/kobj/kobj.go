@@ -13,9 +13,7 @@ import "reflect"
 func IsEmpty(i interface{}) bool {
 	switch reflect.ValueOf(i).Kind() {
 	case reflect.String:
-		if len(i.(string)) == 0 {
-			return true
-		}
+		return len(i.(string)) == 0
 	case reflect.Int:
 		return i.(int) == 0
 	case reflect.Int8:

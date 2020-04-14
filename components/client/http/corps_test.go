@@ -20,7 +20,7 @@ func TestCorps_Do(t *testing.T) {
 			if err != nil {
 				panic(err)
 			}
-			t.Log("异步", string(result.data))
+			t.Log("异步", string(result.Data))
 			wait.Done()
 		})
 
@@ -31,7 +31,7 @@ func TestCorps_Do(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	t.Log("同步", string(result.data))
+	t.Log("同步", string(result.Data))
 
 
 	wait.Wait()
