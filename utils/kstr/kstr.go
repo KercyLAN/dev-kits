@@ -12,6 +12,14 @@ import (
 	"strings"
 )
 
+// 检查字符串是否为空字符串，返回bool
+func IsEmpty(str string) bool {
+	if str == "" || len(str) == 0 {
+		return true
+	}
+	return false
+}
+
 // 返回str中去除最后一个字符后的字符串。
 func RemoveLast(str string) string {
 	if len(str) > 0 {

@@ -13,7 +13,7 @@ type Corps struct {
 	config 					*conf					// 配置信息
 	fileCorps 				*file.Corps				// 文件处理组件
 	idle 					chan *client			// 空闲的客户端管道
-	headers 				map[string]string		// 永久header
+	headers 				map[string]string		// 永久Header
 	cookies 				map[string]*http.Cookie // 永久Cookie
 	transport 				*http.Transport
 }
