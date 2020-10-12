@@ -1,6 +1,6 @@
-#未完成的README
-
 ```
-这是一个未完成的项目，目的为实现各种快速开发的支持库
+dev-kits 已放弃维护，新的仓库查看 secret-dimension 系列
+路径：https://github.com/KercyLAN?tab=repositories
+
 ```
 

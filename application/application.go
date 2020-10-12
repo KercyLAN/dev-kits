@@ -19,9 +19,9 @@ type application struct {
 
 // 初始化应用程序
 //
-// 初始化来自kercylan-lib提供的应用程序通用描述功能集。
+// 初始化来自dev-kits提供的应用程序通用描述功能集。
 //
-// 由于application是可能会被整个kercylan-lib的各个实现所使用，且kercylan-lib是一个支持云端应用构建的支持库，
+// 由于application是可能会被整个dev-kits的各个实现所使用，且dev-kits是一个支持云端应用构建的支持库，
 // 所以需要提供一个节点信息来描述运行这个应用程序的计算机在云端所表示的节点信息。
 //
 // 我们强烈建议在main包的init()函数下对其进行初始化，具体如下：

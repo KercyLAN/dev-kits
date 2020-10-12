@@ -1,7 +1,3 @@
-// expect：be sure to finish!
-// author：KercyLAN
-// create at：2020-2-28 19:36
-
 package krand
 
 import "math/rand"
